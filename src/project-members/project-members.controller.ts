@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Req,
   Param,
   Patch,
   Post,
@@ -35,13 +36,13 @@ export class ProjectMembersController {
   })
   addMember(
     @Param('projectId') projectId: string,
-
     @Body() dto: CreateProjectMemberDto,
+    @Req() req: any,
   ) {
     return this.projectMembersService.addMember(
       projectId,
-
       dto,
+      req.user
     );
   }
 

@@ -19,10 +19,11 @@ export class CreateNotificationDto {
 
   @ApiProperty({
     example: 'TASK',
-    enum: NotificationType,
+    // enum: NotificationType,
   })
-  @IsEnum(NotificationType)
-  type!: any;
+  @IsString()
+  // @IsEnum(NotificationType)
+  type!: string;
 
 
   @ApiProperty({

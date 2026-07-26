@@ -13,7 +13,6 @@ import { EmailService } from 'src/email/email.service';
 import { Role } from 'generated/prisma/enums';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { ActivitiesService } from 'src/activities/activities.service';
-import { NotificationType } from 'src/notifications/dto/create-notification.dto';
 
 @Injectable()
 export class AuthService {
@@ -70,7 +69,7 @@ export class AuthService {
 
      await this.notificationsService.create({
       userId: creator.id,
-      type: NotificationType.WELCOME,
+      type: 'WELCOME',
       title: 'Welcome',
       message: `Welcome to TeamHub`,
     });

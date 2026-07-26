@@ -14,11 +14,11 @@ CREATE TYPE "TaskStatus" AS ENUM ('TODO', 'IN_PROGRESS', 'REVIEW', 'DONE');
 CREATE TYPE "TaskPriority" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'URGENT');
 
 -- CreateEnum
-CREATE TYPE "NotificationType" AS ENUM ('MENTION', 'TASK', 'PROJECT', 'COMMENT', 'DEADLINE');
+CREATE TYPE "NotificationType" AS ENUM ('WELCOME', 'MENTION', 'TASK', 'PROJECT', 'COMMENT', 'DEADLINE');
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "Project" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "status" "ProjectStatus" NOT NULL DEFAULT 'PLANNING',
@@ -44,7 +44,7 @@ CREATE TABLE "Project" (
     "gradient" TEXT,
     "startDate" TIMESTAMP(3) NOT NULL,
     "dueDate" TIMESTAMP(3) NOT NULL,
-    "ownerId" TEXT NOT NULL,
+    "ownerId" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -53,26 +53,26 @@ CREATE TABLE "Project" (
 
 -- CreateTable
 CREATE TABLE "ProjectMember" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "role" "ProjectRole" NOT NULL DEFAULT 'MEMBER',
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "projectId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "projectId" UUID NOT NULL,
+    "userId" UUID NOT NULL,
 
     CONSTRAINT "ProjectMember_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Task" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "status" "TaskStatus" NOT NULL DEFAULT 'TODO',
     "priority" "TaskPriority" NOT NULL DEFAULT 'MEDIUM',
     "estimatedHours" INTEGER NOT NULL,
     "dueDate" TIMESTAMP(3) NOT NULL,
-    "assigneeId" TEXT,
-    "projectId" TEXT NOT NULL,
+    "assigneeId" UUID,
+    "projectId" UUID NOT NULL,
     "tags" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -82,12 +82,12 @@ CREATE TABLE "Task" (
 
 -- CreateTable
 CREATE TABLE "Notification" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "title" TEXT NOT NULL,
     "message" TEXT NOT NULL,
     "read" BOOLEAN NOT NULL DEFAULT false,
     "type" "NotificationType" NOT NULL,
-    "userId" TEXT NOT NULL,
+    "userId" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
@@ -95,12 +95,12 @@ CREATE TABLE "Notification" (
 
 -- CreateTable
 CREATE TABLE "Activity" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "type" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "projectId" TEXT,
-    "taskId" TEXT,
+    "userId" UUID NOT NULL,
+    "projectId" UUID,
+    "taskId" UUID,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Activity_pkey" PRIMARY KEY ("id")
