@@ -13,14 +13,16 @@ import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma.service';
 import { CommonModule } from './common/common.module';
 import { ConfigModule } from '@nestjs/config';
+import { EmailService } from './email/email.service';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }), 
-    AuthModule, UsersModule, ProjectsModule, ProjectMembersModule, TasksModule, NotificationsModule, ActivitiesModule, DashboardModule, PrismaModule, CommonModule],
+    AuthModule, UsersModule, ProjectsModule, ProjectMembersModule, TasksModule, NotificationsModule, ActivitiesModule, DashboardModule, PrismaModule, CommonModule, EmailModule],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [AppService, PrismaService, EmailService],
 })
 export class AppModule {}

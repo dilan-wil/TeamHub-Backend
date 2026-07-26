@@ -13,4 +13,209 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  ADMIN
+  MANAGER
+  MEMBER
+}
 
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+}
+
+enum ProjectRole {
+  MANAGER
+  MEMBER
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum NotificationType {
+  MENTION
+  TASK
+  PROJECT
+  COMMENT
+  DEADLINE
+}
+
+model User {
+  id                String   @id @default(cuid())
+
+  name              String
+  email             String   @unique
+  password          String
+
+  avatar            String?
+
+  department        String?
+
+  role              Role     @default(MEMBER)
+
+  refreshToken      String?
+
+  lastActive        DateTime?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  ownedProjects     Project[]           @relation("ProjectOwner")
+
+  memberships       ProjectMember[]
+
+  assignedTasks     Task[]              @relation("TaskAssignee")
+
+  notifications     Notification[]
+
+  activities        Activity[]
+
+  @@index([email])
+}
+
+model Project {
+
+  id                String @id @default(cuid())
+
+  name              String
+
+  description       String
+
+  status            ProjectStatus @default(PLANNING)
+
+  progress          Int @default(0)
+
+  priority          TaskPriority @default(MEDIUM)
+
+  gradient          String?
+
+  startDate         DateTime
+
+  dueDate           DateTime
+
+  ownerId           String
+
+  owner             User @relation("ProjectOwner", fields: [ownerId], references: [id])
+
+  members           ProjectMember[]
+
+  tasks             Task[]
+
+  activities        Activity[]
+
+  createdAt         DateTime @default(now())
+
+  updatedAt         DateTime @updatedAt
+
+}
+
+model ProjectMember {
+
+  id          String @id @default(cuid())
+
+  role        ProjectRole @default(MEMBER)
+
+  joinedAt    DateTime @default(now())
+
+  projectId   String
+
+  userId      String
+
+  project      Project @relation(fields:[projectId],references:[id],onDelete:Cascade)
+
+  user         User @relation(fields:[userId],references:[id],onDelete:Cascade)
+
+  @@unique([projectId,userId])
+
+}
+
+model Task {
+
+  id                  String @id @default(cuid())
+
+  title               String
+
+  description         String
+
+  status              TaskStatus @default(TODO)
+
+  priority            TaskPriority @default(MEDIUM)
+
+  estimatedHours      Int
+
+  dueDate             DateTime
+
+  assigneeId          String?
+
+  assignee            User? @relation("TaskAssignee",fields:[assigneeId],references:[id])
+
+  projectId           String
+
+  project             Project @relation(fields:[projectId],references:[id],onDelete:Cascade)
+
+  tags                String[]
+
+  createdAt           DateTime @default(now())
+
+  updatedAt           DateTime @updatedAt
+
+  activities          Activity[]
+
+}
+
+model Notification {
+
+  id              String @id @default(cuid())
+
+  title           String
+
+  message         String
+
+  read            Boolean @default(false)
+
+  type            NotificationType
+
+  userId          String
+
+  user            User @relation(fields:[userId],references:[id],onDelete:Cascade)
+
+  createdAt       DateTime @default(now())
+
+}
+
+model Activity {
+
+  id              String @id @default(cuid())
+
+  type            String
+
+  description     String
+
+  userId          String
+
+  projectId       String?
+
+  taskId          String?
+
+  user            User @relation(fields:[userId],references:[id],onDelete:Cascade)
+
+  project         Project? @relation(fields:[projectId],references:[id],onDelete:Cascade)
+
+  task            Task? @relation(fields:[taskId],references:[id],onDelete:Cascade)
+
+  createdAt       DateTime @default(now())
+
+}
