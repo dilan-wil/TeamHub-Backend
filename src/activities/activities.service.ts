@@ -1,26 +1,62 @@
-import { Injectable } from '@nestjs/common';
-import { CreateActivityDto } from './dto/create-activity.dto';
-import { UpdateActivityDto } from './dto/update-activity.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ActivitiesService {
-  create(createActivityDto: CreateActivityDto) {
-    return 'This action adds a new activity';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async findAll() {
+    return this.prisma.activity.findMany({
+      include: {
+        user: true,
+        project: true,
+        task: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all activities`;
+  async findByProject(projectId: string) {
+    return this.prisma.activity.findMany({
+      where: {
+        projectId,
+      },
+      include: {
+        user: true,
+        task: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} activity`;
+  async findByUser(userId: string) {
+    return this.prisma.activity.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        project: true,
+        task: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
-  update(id: number, updateActivityDto: UpdateActivityDto) {
-    return `This action updates a #${id} activity`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} activity`;
+  async create(data: {
+    type: string;
+    description: string;
+    userId: string;
+    projectId?: string;
+    taskId?: string;
+  }) {
+    return this.prisma.activity.create({
+      data,
+    });
   }
 }

@@ -23,16 +23,16 @@ export class ProjectMembersController {
 
   @Get()
   @ApiOperation({
-      summary: 'Get All Members By Project ID',
-    })
+    summary: 'Get All Members By Project ID',
+  })
   findAll(@Param('projectId') projectId: string) {
     return this.projectMembersService.findAll(projectId);
   }
 
   @Post()
   @ApiOperation({
-      summary: 'Add Member To Project',
-    })
+    summary: 'Add Member To Project',
+  })
   addMember(
     @Param('projectId') projectId: string,
 
@@ -47,8 +47,8 @@ export class ProjectMembersController {
 
   @Patch(':id')
   @ApiOperation({
-      summary: 'Update Member Role',
-    })
+    summary: 'Update Member Role',
+  })
   updateRole(
     @Param('id') id: string,
 
@@ -63,8 +63,8 @@ export class ProjectMembersController {
 
   @Delete(':id')
   @ApiOperation({
-      summary: 'Remove Member From Project',
-    })
+    summary: 'Remove Member From Project',
+  })
   remove(@Param('id') id: string) {
     return this.projectMembersService.remove(id);
   }

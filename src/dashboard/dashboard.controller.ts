@@ -1,34 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DashboardService } from './dashboard.service';
-import { CreateDashboardDto } from './dto/create-dashboard.dto';
-import { UpdateDashboardDto } from './dto/update-dashboard.dto';
+import { JwtAuthGuard } from 'src/auth/jwt.guard';
 
+@ApiTags('Dashboard')
+@ApiBearerAuth()
 @Controller('dashboard')
+@UseGuards(JwtAuthGuard)
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
-  @Post()
-  create(@Body() createDashboardDto: CreateDashboardDto) {
-    return this.dashboardService.create(createDashboardDto);
-  }
-
   @Get()
-  findAll() {
-    return this.dashboardService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.dashboardService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDashboardDto: UpdateDashboardDto) {
-    return this.dashboardService.update(+id, updateDashboardDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.dashboardService.remove(+id);
+  @ApiOperation({
+    summary: 'Get Stats',
+  })
+  getDashboard(@Req() req: any) {
+    return this.dashboardService.getDashboard(req.user.id);
   }
 }

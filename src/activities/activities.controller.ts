@@ -1,34 +1,36 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { ActivitiesService } from './activities.service';
-import { CreateActivityDto } from './dto/create-activity.dto';
-import { UpdateActivityDto } from './dto/update-activity.dto';
 
+@ApiTags('Activities')
+@ApiBearerAuth()
 @Controller('activities')
+@UseGuards(JwtAuthGuard)
 export class ActivitiesController {
   constructor(private readonly activitiesService: ActivitiesService) {}
 
-  @Post()
-  create(@Body() createActivityDto: CreateActivityDto) {
-    return this.activitiesService.create(createActivityDto);
-  }
-
   @Get()
+  @ApiOperation({
+    summary: 'Find All ',
+  })
   findAll() {
     return this.activitiesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.activitiesService.findOne(+id);
+  @Get('project/:projectId')
+  @ApiOperation({
+    summary: 'Find All By Project Id',
+  })
+  findByProject(@Param('projectId') projectId: string) {
+    return this.activitiesService.findByProject(projectId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateActivityDto: UpdateActivityDto) {
-    return this.activitiesService.update(+id, updateActivityDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.activitiesService.remove(+id);
+  @Get('user/:userId')
+  @ApiOperation({
+    summary: 'Find All By User ID',
+  })
+  findByUser(@Param('userId') userId: string) {
+    return this.activitiesService.findByUser(userId);
   }
 }

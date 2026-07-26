@@ -1,34 +1,60 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { NotificationsService } from './notifications.service';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
 
+@ApiTags('Notifications')
+@ApiBearerAuth()
 @Controller('notifications')
+@UseGuards(JwtAuthGuard)
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
-  @Post()
-  create(@Body() createNotificationDto: CreateNotificationDto) {
-    return this.notificationsService.create(createNotificationDto);
-  }
-
   @Get()
-  findAll() {
-    return this.notificationsService.findAll();
+  @ApiOperation({
+    summary: 'Find All',
+  })
+  findAll(@Req() req: any) {
+    return this.notificationsService.findAll(req.user.id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.notificationsService.findOne(+id);
+  @Get('unread')
+  @ApiOperation({
+    summary: 'Find All Unread',
+  })
+  findUnread(@Req() req: any) {
+    return this.notificationsService.findUnread(req.user.id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNotificationDto: UpdateNotificationDto) {
-    return this.notificationsService.update(+id, updateNotificationDto);
+  @Patch(':id/read')
+  @ApiOperation({
+    summary: 'Mark As Read',
+  })
+  markAsRead(@Param('id') id: string, @Req() req: any) {
+    return this.notificationsService.markAsRead(id, req.user.id);
+  }
+
+  @Patch('read-all')
+  @ApiOperation({
+    summary: 'Mark All as Read',
+  })
+  markAllAsRead(@Req() req: any) {
+    return this.notificationsService.markAllAsRead(req.user.id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.notificationsService.remove(+id);
+  @ApiOperation({
+    summary: 'Delete Notification',
+  })
+  remove(@Param('id') id: string, @Req() req: any) {
+    return this.notificationsService.remove(id, req.user.id);
   }
 }

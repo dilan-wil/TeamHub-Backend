@@ -16,7 +16,6 @@ export class ProjectMembersService {
       where: {
         projectId,
       },
-
       include: {
         user: {
           select: {
@@ -66,9 +65,7 @@ export class ProjectMembersService {
     return this.prisma.projectMember.create({
       data: {
         projectId,
-
         userId: dto.userId,
-
         role: dto.role,
       },
 
