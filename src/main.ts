@@ -31,7 +31,21 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('TeamHub API')
-    .setDescription('TeamHub REST API')
+    .setDescription(
+      `API for TeamHub Project Management and Collaboration Platform.
+      
+      ## Features
+      - User authentication with JWT
+      - Creation and Manamgement of Projects
+      - Assign task to members
+      - See sctivity Workflow
+      - See how your team performs
+      
+      ## Authentication
+      Use the /auth/login endpoints to get a JWT token.
+      Then include the token in the Authorization header: \`Bearer <token>\`
+    `,
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .build();

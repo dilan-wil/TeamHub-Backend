@@ -10,19 +10,12 @@ export class UsersService {
     return this.prisma.user.findMany({
       select: {
         id: true,
-
         name: true,
-
         email: true,
-
         avatar: true,
-
         role: true,
-
         department: true,
-
         createdAt: true,
-
         lastActive: true,
       },
 
@@ -40,19 +33,12 @@ export class UsersService {
 
       select: {
         id: true,
-
         name: true,
-
         email: true,
-
         avatar: true,
-
         role: true,
-
         department: true,
-
         createdAt: true,
-
         lastActive: true,
       },
     });
@@ -79,22 +65,14 @@ export class UsersService {
       where: {
         id,
       },
-
       data: dto,
-
       select: {
         id: true,
-
         name: true,
-
         email: true,
-
         avatar: true,
-
         role: true,
-
         department: true,
-
         createdAt: true,
       },
     });
