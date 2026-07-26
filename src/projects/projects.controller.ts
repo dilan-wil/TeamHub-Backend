@@ -67,7 +67,7 @@ export class ProjectsController {
   @ApiOperation({
     summary: 'Delete project By ID',
   })
-  remove(@Param('id') id: string) {
-    return this.projectsService.remove(id);
+  remove(@Param('id') id: string, @Req() req: any) {
+    return this.projectsService.remove(id, req.user.id);
   }
 }

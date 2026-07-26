@@ -6,6 +6,8 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailModule } from '../email/email.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
+import { ActivitiesModule } from 'src/activities/activities.module';
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { EmailModule } from '../email/email.module';
         signOptions: { expiresIn: '7d' },
       }),
     }),
-    EmailModule
+    EmailModule, NotificationsModule, ActivitiesModule
   ],
   providers: [AuthService, JwtStrategy, PrismaService],
   controllers: [AuthController],

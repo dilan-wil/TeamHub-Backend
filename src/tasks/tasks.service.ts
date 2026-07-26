@@ -8,10 +8,16 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { AssignTaskDto } from './dto/assign-task.dto';
+import { ActivitiesService } from 'src/activities/activities.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class TasksService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+    private readonly activitiesService: ActivitiesService,
+  ) {}
 
   async create(dto: CreateTaskDto, creatorId: string) {
     const project = await this.prisma.project.findUnique({
@@ -48,19 +54,12 @@ export class TasksService {
     const task = await this.prisma.task.create({
       data: {
         title: dto.title,
-
         description: dto.description,
-
         status: dto.status,
-
         priority: dto.priority,
-
         dueDate: new Date(dto.dueDate),
-
         estimatedHours: dto.estimatedHours,
-
         tags: dto.tags ?? [],
-
         project: {
           connect: {
             id: dto.projectId,
@@ -86,6 +85,21 @@ export class TasksService {
           },
         },
       },
+    });
+
+    await this.activitiesService.create({
+      type: 'TASK_CREATED',
+      description: `Created task "${task.title}"`,
+      userId: creatorId,
+      projectId: task.projectId,
+      taskId: task.id,
+    });
+
+    await this.notificationsService.create({
+      userId: task.assigneeId,
+      type: 'TASK',
+      title: 'New task assigned',
+      message: `You have been assigned "${task.title}"`,
     });
 
     return task;
@@ -328,7 +342,7 @@ export class TasksService {
       throw new NotFoundException('Task not found');
     }
 
-    return this.prisma.task.update({
+    const newTaskWithNewStatus = await this.prisma.task.update({
       where: {
         id,
       },
@@ -355,5 +369,14 @@ export class TasksService {
         },
       },
     });
+    await this.activitiesService.create({
+      type: 'TASK_STATUS_CHANGED',
+      description: `Changed "${task.title}" to ${task.status}`,
+      userId: task.assigneeId,
+      projectId: task.projectId,
+      taskId: task.id,
+    });
+
+    return newTaskWithNewStatus;
   }
 }

@@ -11,6 +11,9 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { EmailService } from 'src/email/email.service';
 import { Role } from 'generated/prisma/enums';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { ActivitiesService } from 'src/activities/activities.service';
+import { NotificationType } from 'src/notifications/dto/create-notification.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +21,8 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
+    private readonly notificationsService: NotificationsService,
+    private readonly activitiesService: ActivitiesService,
   ) {}
 
   async register(dto: RegisterDto, creator: any) {
@@ -56,6 +61,19 @@ export class AuthService {
       generatedPassword,
       user.name,
     );
+
+    await this.activitiesService.create({
+      type: 'USER_CREATION',
+      description: `Invited "${dto.name} to TeamHub"`,
+      userId: creator.id,
+    });
+
+     await this.notificationsService.create({
+      userId: creator.id,
+      type: NotificationType.WELCOME,
+      title: 'Welcome',
+      message: `Welcome to TeamHub`,
+    });
 
     return {
       message: 'User created successfully. Credentials sent by email.',
